@@ -4,7 +4,7 @@ target/
 !**/src/test/**/target/
 .kotlin
 
-applicaiton-local.yml
+src/main/resources/application-local.yml
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
