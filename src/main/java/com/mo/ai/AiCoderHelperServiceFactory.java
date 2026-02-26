@@ -1,5 +1,7 @@
 package com.mo.ai;
 
+import com.mo.ai.mcp.McpConfig;
+import dev.langchain4j.mcp.McpToolProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
@@ -18,6 +20,9 @@ public class AiCoderHelperServiceFactory {
     @Resource
     private ContentRetriever contentRetriever;
 
+    @Resource
+    private McpToolProvider mcpToolProvider;
+
     @Bean
     public AiCoderHelperService aiCoderHelperService() {
 
@@ -27,7 +32,8 @@ public class AiCoderHelperServiceFactory {
         AiCoderHelperService aiCoderHelperService = AiServices.builder(AiCoderHelperService.class)
                 .chatModel(deepseekChatModel)
                 .chatMemory(ChatMemory)
-                .contentRetriever(contentRetriever) // RAG 检索增强生成
+//                .contentRetriever(contentRetriever)  // RAG 检索增强生成  免费token用完了
+                .toolProvider(mcpToolProvider) // mcp 工具调用
                 .build();
 
         return aiCoderHelperService;

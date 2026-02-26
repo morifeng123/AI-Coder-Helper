@@ -42,4 +42,10 @@ class AiCoderHelperServiceTest {
         System.out.println(res.content());
     }
 
+    @Test
+    void chatWithMCP(){
+        String res = aiCoderHelperService.chat("马斯克是谁？");
+        System.out.println(res);
+    }
+
 }

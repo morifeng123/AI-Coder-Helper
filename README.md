@@ -277,3 +277,29 @@ EmbeddingStoreContentRetriever retriever = EmbeddingStoreContentRetriever.builde
 Result<String> chatWithRag (String message);
 ```
 
+### 6. MCP (Model Context Protocol - 模型上下文协议)
+
+MCP是一种开放标准，目的是增强AI与外部系统的交互能力。MCP为AI提供了与外部工具、资源和服务交互的标准化方式，让AI能够访问最新数据、执行复杂操作，并与现有系统集成。
+
+它就像是给大语言模型（LLM，比如Claude、GPT、Gemini、DeepSeek等）装的一个标准化USB-C接口。
+
+核心代码如下：
+```java
+// 1. 创建 MCP 传输层（HTTP 方式）
+McpTransport transport = new HttpMcpTransport.Builder()
+        .sseUrl("https://open.bigmodel.cn/api/mcp/web_search/sse?Authorization=" + apiKey)
+        .logRequests(true) // 开启日志，查看更多信息
+        .logResponses(true)
+        .build();
+
+// 2. 创建 MCP 客户端
+McpClient mcpClient = new DefaultMcpClient.Builder()
+        .key("MoMcpClient")
+        .transport(transport)
+        .build();
+
+// 3. 从 MCP 客户端获取工具
+McpToolProvider toolProvider = McpToolProvider.builder()
+        .mcpClients(mcpClient)
+        .build();
+```
