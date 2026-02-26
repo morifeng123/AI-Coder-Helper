@@ -108,3 +108,70 @@ ChatResponse chatResponse = deepseekChatModel.chat(systemMessage,userMessage);
 2. 逐步添加 ：根据效果逐步增加其他维度
 3. 组合使用 ：多种技巧组合效果最佳
 4. 持续优化 ：根据 AI 的回答质量不断调整提示词
+
+### 3. ChatMemory 会话记忆
+
+在 LangChain4j 中，"会话记忆"（ChatMemory）用于在多轮对话中保持上下文，让 AI 能够记住之前的对话内容。
+
+**核心作用**：
+- 保持对话的连续性和上下文
+- 支持多轮交互，避免重复提供背景信息
+- 实现更自然的对话体验
+
+**核心组成**：
+- `ChatMemory`：会话记忆接口
+- `Message`：存储在记忆中的消息（包括 UserMessage、AiMessage、SystemMessage）
+- `maxMessages`：设置记忆的最大消息数量，防止内存溢出
+
+**使用示例**：
+```java
+// 创建会话记忆，最多保留 10 条消息
+ChatMemory chatMemory = MessageWindowChatMemory.withMaxMessages(10);
+
+// 添加系统消息
+chatMemory.add(SystemMessage.from("你是一个专业的编程助手。"));
+
+// 添加用户消息
+chatMemory.add(UserMessage.from("你好，请介绍 Java 8 的新特性"));
+
+// AI 回复后，将回复也加入记忆
+chatMemory.add(AiMessage.from("Java 8 的主要新特性包括..."));
+
+// 后续对话时，AI 会自动基于记忆内容回答
+ChatResponse response = deepseekChatModel.chat(chatMemory.messages());
+
+// 会话记忆
+MessageWindowChatMemory ChatMemory = MessageWindowChatMemory.withMaxMessages(10);
+
+// 在AiService中添加会话记忆
+AiCoderHelperService aiCoderHelperService = AiServices.builder(AiCoderHelperService.class)
+      .chatModel(deepseekChatModel)
+      .chatMemory(ChatMemory)
+      .build();
+
+```
+
+**注意事项**：
+- 合理设置 `maxMessages`，避免 Token 消耗过多
+- 敏感信息不要存入记忆
+- 长时间对话后考虑清空记忆重新开始
+
+**进阶用法**
+会话记忆默认是存储在内存中的,重启后会丢失,可以通过自定义 [`ChatMemoryStore`](https://docs.langchain4j.dev/tutorials/chat-memory#persistence) 接口的实现类，讲消息保存到 `MySQL` 等其他数据源中 
+
+如果我们有多个用户,希望每个用户之前的会话隔离,可以通过给对话方法添加 `memoryId` 参数和注解,在调用对话时传入 memoryId 即可实现。
+
+```
+String chat(@MemoryId String memoryId, @UserMessage String userMessage);
+```
+
+构造 `AI Service` 时,可以通过 `chatMemoryProvider` 方法指定每个 `memoryId` 单独创建会话记忆:
+
+```
+// 构造 AI Service
+AiCoderHelperService aiCoderHelperService = AiServices.builder(AiCoderHelperService.class)
+      .chatModel(deepseekChatModel)
+      .chatMemoryProvider(memoryId -> MessageWindowChatMemory.withMaxMessages(10))
+      .build();
+```
+

@@ -1,7 +1,9 @@
 package com.mo.ai;
 
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.service.AiServices;
+import dev.langchain4j.service.spring.AiService;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +16,16 @@ public class AiCoderHelperServiceFactory {
 
     @Bean
     public AiCoderHelperService aiCoderHelperService() {
-        return AiServices.create(AiCoderHelperService.class, deepseekChatModel);
+
+        // 会话记忆
+        MessageWindowChatMemory ChatMemory = MessageWindowChatMemory.withMaxMessages(10);
+
+        AiCoderHelperService aiCoderHelperService = AiServices.builder(AiCoderHelperService.class)
+                .chatModel(deepseekChatModel)
+                .chatMemory(ChatMemory)
+                .build();
+
+        return aiCoderHelperService;
     }
 
 

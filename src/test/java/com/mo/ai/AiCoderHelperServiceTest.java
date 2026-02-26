@@ -18,5 +18,13 @@ class AiCoderHelperServiceTest {
         System.out.println(result);
     }
 
+    @Test
+    void chatWithMemory() {
+        String result = aiCoderHelperService.chat("你好,我是枫");
+        System.out.println(result);
+        result = aiCoderHelperService.chat("你知道我是谁吗？");
+        System.out.println(result);
+    }
+
 
 }
