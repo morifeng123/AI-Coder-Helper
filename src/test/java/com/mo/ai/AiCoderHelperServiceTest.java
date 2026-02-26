@@ -27,4 +27,10 @@ class AiCoderHelperServiceTest {
     }
 
 
+    @Test
+    void chatForReport() {
+        String userMessage = "你好，我是枫，请你帮我制定AI的的学习路线";
+        AiCoderHelperService.Report report = aiCoderHelperService.chatForReport(userMessage);
+        System.out.println(report);
+    }
 }

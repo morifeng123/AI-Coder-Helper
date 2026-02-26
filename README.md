@@ -175,3 +175,35 @@ AiCoderHelperService aiCoderHelperService = AiServices.builder(AiCoderHelperServ
       .build();
 ```
 
+### 4. 结构化输出
+
+在 LangChain4j 中，"结构化输出"（Structured Output）用于让 AI 按照指定的格式（如 JSON、Java 对象等）返回数据，便于程序解析和处理。
+
+**核心作用**：
+- 将 AI 的文本回复转换为结构化数据
+- 便于程序自动解析和处理
+- 支持复杂的返回类型（对象、列表、枚举等）
+
+如果你发现 AI 有时无法生成准确的 JSON,那么可以采用 [`JSON Schema`](https://docs.langchain4j.dev/tutorials/structured-outputs#json-schema) 模式,直接在请求中约束 LLM 的输出格式。这是目前最可靠、准确度最高的结构化输出实现。
+```
+ResponseFormat responseFormat = ResponseFormat.builder()
+        .type(JSON) // type can be either TEXT (default) or JSON
+        .jsonSchema(JsonSchema.builder()
+                .name("Person") // OpenAI requires specifying the name for the schema
+                .rootElement(JsonObjectSchema.builder() // see [1] below
+                        .addStringProperty("name")
+                        .addIntegerProperty("age")
+                        .addNumberProperty("height")
+                        .addBooleanProperty("married")
+                        .required("name", "age", "height", "married") // see [2] below
+                        .build())
+                .build())
+        .build();
+
+ChatRequest chatRequest = ChatRequest.builder()
+        .responseFormat(responseFormat)
+        .messages(userMessage)
+        .build();
+
+String output = chatResponse.aiMessage().text();
+```
