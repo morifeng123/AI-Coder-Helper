@@ -2,6 +2,7 @@ package com.mo.ai;
 
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.spring.AiService;
 import jakarta.annotation.Resource;
@@ -14,6 +15,9 @@ public class AiCoderHelperServiceFactory {
     @Resource
     private ChatModel deepseekChatModel;
 
+    @Resource
+    private ContentRetriever contentRetriever;
+
     @Bean
     public AiCoderHelperService aiCoderHelperService() {
 
@@ -23,6 +27,7 @@ public class AiCoderHelperServiceFactory {
         AiCoderHelperService aiCoderHelperService = AiServices.builder(AiCoderHelperService.class)
                 .chatModel(deepseekChatModel)
                 .chatMemory(ChatMemory)
+                .contentRetriever(contentRetriever) // RAG 检索增强生成
                 .build();
 
         return aiCoderHelperService;

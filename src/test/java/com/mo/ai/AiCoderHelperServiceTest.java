@@ -1,5 +1,6 @@
 package com.mo.ai;
 
+import dev.langchain4j.service.Result;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,4 +34,12 @@ class AiCoderHelperServiceTest {
         AiCoderHelperService.Report report = aiCoderHelperService.chatForReport(userMessage);
         System.out.println(report);
     }
+
+    @Test
+    void chatWithRag() {
+        Result<String> res = aiCoderHelperService.chatWithRag("String、StringBuilder、StringBuffer 的区别是什么？");
+        System.out.println(res.sources());
+        System.out.println(res.content());
+    }
+
 }

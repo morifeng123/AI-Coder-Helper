@@ -207,3 +207,73 @@ ChatRequest chatRequest = ChatRequest.builder()
 
 String output = chatResponse.aiMessage().text();
 ```
+
+### 5. 检索增强生成 - RAG
+
+`RAG (Retrieval-Augmented Generation)` 是一种结合了检索和生成的模型,可以在生成文本时,基于外部知识库进行信息补充,提高回答的准确性和丰富性,解决大模型的知识时效性限制和幻觉问题。
+
+RAG 的完整工作流程如下：
+![alt text](doc/image.png)
+
+**RAG 工作流程说明**：
+
+1. **用户提问（User Query）**
+   - 用户输入问题或请求
+
+2. **文档检索（Document Retrieval）**
+   - 将用户问题转换为向量（Embedding）
+   - 在向量数据库中检索相似的文档片段
+   - 返回最相关的 Top-K 个文档
+
+3. **上下文构建（Context Building）**
+   - 将检索到的文档片段组合成上下文
+   - 与用户问题一起构建完整的 Prompt
+
+4. **增强生成（Augmented Generation）**
+   - AI 模型基于上下文生成回答
+   - 回答中包含了检索到的知识
+
+5. **返回结果（Response）**
+   - 向用户展示生成的回答
+   - 可选：展示引用的源文档
+
+核心代码如下：
+```java
+// 1. 加载文档
+List<Document> documents = FileSystemDocumentLoader.loadDocuments("doc");
+
+// 2. 文档切割: 每个文档安装段落切割 最大长度 1000个字符 每次最多重叠200个字符
+DocumentByParagraphSplitter documentByParagraphSplitter =
+        new DocumentByParagraphSplitter(1000, 200);
+
+// 3. 自定义文档加载器，把文档转换成向量数据库中
+EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
+        .documentSplitter(documentByParagraphSplitter)
+        // 为了提高文档的质量, 为每个切割后的文档碎片 TextSegment 添加文档名称作为元信息
+        .textSegmentTransformer(textSegment -> TextSegment.from(
+                textSegment.metadata().getString("file_name") + "\n" + textSegment.text(),
+                textSegment.metadata()))
+        // 使用的向量模型
+        .embeddingModel(qwenEmbeddingModel)
+        .embeddingStore(embeddingStore)
+        .build();
+
+// 加载文档
+ingestor.ingest(documents);
+
+// 4. 自定义内容加载器
+EmbeddingStoreContentRetriever retriever = EmbeddingStoreContentRetriever.builder()
+        .embeddingModel(qwenEmbeddingModel)
+        .embeddingStore(embeddingStore)
+        .maxResults(5) // 最多 5 条结果
+        .minScore(0.7) // 过滤掉分数小于0.7的结果
+        .build();
+```
+
+在 `Langchain4j` 中,实现问题回答来源这个功能很简单。在 `AI Service` 中新增方法,在原来的返回类型中封装一层 `Result` 类,就可以获得封装后的结果,从中还可以获取到 RAG 引用的源文档、以及 token 的消耗情况等等。
+
+```java
+@SystemMessage(fromResource = "system-prompt.txt")
+Result<String> chatWithRag (String message);
+```
+
