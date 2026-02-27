@@ -332,3 +332,28 @@ public class SafeInputGuardrail implements InputGuardrail {
     }
 }
 ```
+
+### 8. SSE 流式返回
+
+Langchain4j 提供了两种方式来实现 SSE 流式返回 (流式响应不支持结构化输出)。
+
+一种方法是[`TokenStream`](https://docs.langchain4j.dev/tutorials/ai-services#streaming),这里不做详细介绍。
+
+另一种是 [`Flux` ](https://docs.langchain4j.dev/tutorials/ai-services#flux)
+
+```java
+
+<dependency>
+        <groupId>dev.langchain4j</groupId>
+        <artifactId>langchain4j-reactor</artifactId>
+        <version>1.1.0-beta7</version>
+</dependency>
+
+interface Assistant {
+
+  Flux<String> chat(String message);
+  
+}
+
+```
+
