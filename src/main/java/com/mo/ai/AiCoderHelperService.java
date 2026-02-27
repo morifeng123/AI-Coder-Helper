@@ -1,11 +1,15 @@
 package com.mo.ai;
 
+import com.mo.ai.guardrail.SafeInputGuardrail;
 import dev.langchain4j.service.Result;
 import dev.langchain4j.service.SystemMessage;
+import dev.langchain4j.service.guardrail.InputGuardrails;
 import dev.langchain4j.service.spring.AiService;
 
 import java.util.List;
 
+
+@InputGuardrails({SafeInputGuardrail.class})
 public interface AiCoderHelperService {
 
     @SystemMessage(fromResource = "system-prompt.txt")

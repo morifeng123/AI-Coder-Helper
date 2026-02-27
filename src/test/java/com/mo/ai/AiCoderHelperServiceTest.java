@@ -48,4 +48,10 @@ class AiCoderHelperServiceTest {
         System.out.println(res);
     }
 
+    @Test
+    void chatWithGuardrail() {
+        String res = aiCoderHelperService.chat("kill u");
+        System.out.println(res);
+    }
+
 }

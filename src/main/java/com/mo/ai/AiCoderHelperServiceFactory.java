@@ -33,7 +33,7 @@ public class AiCoderHelperServiceFactory {
                 .chatModel(deepseekChatModel)
                 .chatMemory(ChatMemory)
 //                .contentRetriever(contentRetriever)  // RAG 检索增强生成  免费token用完了
-                .toolProvider(mcpToolProvider) // mcp 工具调用
+//                .toolProvider(mcpToolProvider) // mcp 工具调用
                 .build();
 
         return aiCoderHelperService;
