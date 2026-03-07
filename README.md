@@ -277,6 +277,9 @@ EmbeddingStoreContentRetriever retriever = EmbeddingStoreContentRetriever.builde
 Result<String> chatWithRag (String message);
 ```
 
+**关于更多RAG的问题可以看这篇文章** 🔴 [RAG系统的一些高频问题与参考方案](https://ai.codefather.cn/post/2029154211328966657)
+
+
 ### 6. MCP (Model Context Protocol - 模型上下文协议)
 
 MCP是一种开放标准，目的是增强AI与外部系统的交互能力。MCP为AI提供了与外部工具、资源和服务交互的标准化方式，让AI能够访问最新数据、执行复杂操作，并与现有系统集成。
